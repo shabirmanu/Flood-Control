@@ -35,7 +35,7 @@ class SettingsForm extends ConfigFormBase {
     $form = parent::buildForm($form, $form_state);
 
     $config = $this->config('flood_control.settings');
-    print_r($config); exit;
+
     $form['login'] = array(
         '#type' => 'fieldset',
         '#title' => t('Login'),
@@ -44,29 +44,31 @@ class SettingsForm extends ConfigFormBase {
     $form['login']['user_failed_login_ip_limit'] = array(
         '#type' => 'select',
         '#title' => t('Failed login (IP) limit'),
-        '#options' => array_combine(array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 75, 100, 125, 150, 200, 250, 500),
+        '#options' => array_combine(array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 75, 100, 125, 150, 200,
+            250, 500),
             array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 75, 100, 125, 150, 200, 250, 500)),
         '#default_value' => $config->get('user_failed_login_ip_limit', 50),
     );
     $form['login']['user_failed_login_ip_window'] = array(
         '#type' => 'select',
-        '#title' => t('Failed login (IP) window'),
-        '#options' => array(0 => t('None (disabled)')) + array_combine(array(60, 180, 300, 600, 900, 1800, 2700, 3600, 10800, 21600, 32400, 43200, 86400),
-                array(60, 180, 300, 600, 900, 1800, 2700, 3600, 10800, 21600, 32400, 43200, 86400), 'format_interval'),
+        '#title' => $this->t('Failed login (IP) window'),
+        '#options' =>  array_combine(array(60, 180, 300, 600, 900, 1800, 2700, 3600, 10800, 21600, 32400, 43200, 86400),
+                array(60, 180, 300, 600, 900, 1800, 2700, 3600, 10800, 21600, 32400, 43200, 86400)),
         '#default_value' => $config->get('user_failed_login_ip_window', 3600),
     );
     $form['login']['user_failed_login_user_limit'] = array(
         '#type' => 'select',
         '#title' => t('Failed login (username) limit'),
-        '#options' => array_combine(array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 75, 100, 125, 150, 200, 250, 500),
+        '#options' => array_combine(array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 75, 100, 125, 150, 200, 250,
+            500),
             array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 75, 100, 125, 150, 200, 250, 500)),
         '#default_value' => $config->get('user_failed_login_user_limit', 5),
     );
     $form['login']['user_failed_login_user_window'] = array(
         '#type' => 'select',
         '#title' => t('Failed login (username) window'),
-        '#options' => array(0 => t('None (disabled)')) + array_combine(array(60, 180, 300, 600, 900, 1800, 2700, 3600, 10800, 21600, 32400, 43200, 86400),
-                array(60, 180, 300, 600, 900, 1800, 2700, 3600, 10800, 21600, 32400, 43200, 86400), 'format_interval'),
+        '#options' =>  array_combine(array(60, 180, 300, 600, 900, 1800, 2700, 3600, 10800, 21600, 32400, 43200, 86400),
+                array(60, 180, 300, 600, 900, 1800, 2700, 3600, 10800, 21600, 32400, 43200, 86400)),
         '#default_value' => $config->get('user_failed_login_user_window', 21600),
     );
 
@@ -79,15 +81,16 @@ class SettingsForm extends ConfigFormBase {
     $form['contact']['contact_threshold_limit'] = array(
         '#type' => 'select',
         '#title' => t('Sending e-mails limit'),
-        '#options' => array_combine(array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 75, 100, 125, 150, 200, 250, 500),
+        '#options' => array_combine(array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 75, 100, 125, 150, 200, 250,
+            500),
             array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 75, 100, 125, 150, 200, 250, 500)),
         '#default_value' => $config->get('contact_threshold_limit', 5),
     );
     $form['contact']['contact_threshold_window'] = array(
         '#type' => 'select',
         '#title' => t('Sending e-mails window'),
-        '#options' => array(0 => t('None (disabled)')) + array_combine(array(60, 180, 300, 600, 900, 1800, 2700, 3600, 10800, 21600, 32400, 43200, 86400),
-                array(60, 180, 300, 600, 900, 1800, 2700, 3600, 10800, 21600, 32400, 43200, 86400),'format_interval'),
+        '#options' => array_combine(array(60, 180, 300, 600, 900, 1800, 2700, 3600, 10800, 21600, 32400, 43200, 86400),
+                array(60, 180, 300, 600, 900, 1800, 2700, 3600, 10800, 21600, 32400, 43200, 86400)),
         '#default_value' => $config->get('contact_threshold_window', 3600),
     );
 
@@ -114,7 +117,6 @@ class SettingsForm extends ConfigFormBase {
       ->set('user_failed_login_user_window', $form_state->getValue('user_failed_login_user_window'))
       ->set('contact_threshold_limit', $form_state->getValue('contact_threshold_limit'))
       ->set('contact_threshold_window', $form_state->getValue('contact_threshold_window'))->save();
-    return parent::submitForm();
   }
 
   /**
