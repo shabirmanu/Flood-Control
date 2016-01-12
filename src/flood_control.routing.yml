@@ -1,7 +1,0 @@
-flood_control.flood_control_config_form:
-  path: '/admin/config/flood-control'
-  defaults:
-    _form: '\Drupal\flood_control\Form\SettingsForm'
-    _title: Flood Control
-  requirement:
-    _permission: 'administer site configuration'
