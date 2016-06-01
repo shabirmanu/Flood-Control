@@ -34,64 +34,66 @@ class SettingsForm extends ConfigFormBase {
 
     $form = parent::buildForm($form, $form_state);
 
-    $config = $this->config('flood_control.settings');
+    $flood_config = $this->config('user.flood');
+    $contact_config = $this->config('contact.settings');
 
-    $form['login'] = array(
+
+    $form['user'] = array(
         '#type' => 'fieldset',
-        '#title' => t('Login'),
+        '#title' => t('Login Flooding'),
         '#access' => \Drupal::currentUser()->hasPermission('administer users'),
     );
-    $form['login']['user_failed_login_ip_limit'] = array(
+    $form['user']['ip_limit'] = array(
         '#type' => 'select',
         '#title' => t('Failed login (IP) limit'),
         '#options' => array_combine(array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 75, 100, 125, 150, 200,
             250, 500),
             array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 75, 100, 125, 150, 200, 250, 500)),
-        '#default_value' => $config->get('user_failed_login_ip_limit', 50),
+        '#default_value' => $flood_config->get('ip_limit', 50),
     );
-    $form['login']['user_failed_login_ip_window'] = array(
+    $form['user']['ip_window'] = array(
         '#type' => 'select',
         '#title' => $this->t('Failed login (IP) window'),
         '#options' =>  array_combine(array(60, 180, 300, 600, 900, 1800, 2700, 3600, 10800, 21600, 32400, 43200, 86400),
                 array(60, 180, 300, 600, 900, 1800, 2700, 3600, 10800, 21600, 32400, 43200, 86400)),
-        '#default_value' => $config->get('user_failed_login_ip_window', 3600),
+        '#default_value' => $flood_config->get('ip_window', 3600),
     );
-    $form['login']['user_failed_login_user_limit'] = array(
+    $form['user']['user_limit'] = array(
         '#type' => 'select',
         '#title' => t('Failed login (username) limit'),
         '#options' => array_combine(array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 75, 100, 125, 150, 200, 250,
             500),
             array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 75, 100, 125, 150, 200, 250, 500)),
-        '#default_value' => $config->get('user_failed_login_user_limit', 5),
+        '#default_value' => $flood_config->get('user_limit', 5),
     );
-    $form['login']['user_failed_login_user_window'] = array(
+    $form['user']['user_window'] = array(
         '#type' => 'select',
         '#title' => t('Failed login (username) window'),
         '#options' =>  array_combine(array(60, 180, 300, 600, 900, 1800, 2700, 3600, 10800, 21600, 32400, 43200, 86400),
                 array(60, 180, 300, 600, 900, 1800, 2700, 3600, 10800, 21600, 32400, 43200, 86400)),
-        '#default_value' => $config->get('user_failed_login_user_window', 21600),
+        '#default_value' => $flood_config->get('user_window', 21600),
     );
 
     // Contact module flood events.
     $form['contact'] = array(
         '#type' => 'fieldset',
-        '#title' => t('Contact forms'),
+        '#title' => t('Contact Forms Flooding'),
         '#access' => \Drupal::currentUser()->hasPermission('administer contact forms'),
     );
-    $form['contact']['contact_threshold_limit'] = array(
+    $form['contact']['flood']['limit'] = array(
         '#type' => 'select',
-        '#title' => t('Sending e-mails limit'),
+        '#title' => t('Emails sent limit'),
         '#options' => array_combine(array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 75, 100, 125, 150, 200, 250,
             500),
             array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 75, 100, 125, 150, 200, 250, 500)),
-        '#default_value' => $config->get('contact_threshold_limit', 5),
+        '#default_value' => $contact_config->get('flood.limit', 5),
     );
-    $form['contact']['contact_threshold_window'] = array(
+    $form['contact']['flood']['interval'] = array(
         '#type' => 'select',
-        '#title' => t('Sending e-mails window'),
+        '#title' => t('Emails sent window'),
         '#options' => array_combine(array(60, 180, 300, 600, 900, 1800, 2700, 3600, 10800, 21600, 32400, 43200, 86400),
                 array(60, 180, 300, 600, 900, 1800, 2700, 3600, 10800, 21600, 32400, 43200, 86400)),
-        '#default_value' => $config->get('contact_threshold_window', 3600),
+        '#default_value' => $contact_config->get('flood.interval', 3600),
     );
 
     // Show a message if the user does not have any access to any options.
@@ -110,13 +112,16 @@ class SettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $this->config('flood_control.settings')
-      ->set('user_failed_login_ip_limit', $form_state->getValue('user_failed_login_ip_limit'))
-      ->set('user_failed_login_ip_window', $form_state->getValue('user_failed_login_ip_window'))
-      ->set('user_failed_login_user_limit', $form_state->getValue('user_failed_login_user_limit'))
-      ->set('user_failed_login_user_window', $form_state->getValue('user_failed_login_user_window'))
-      ->set('contact_threshold_limit', $form_state->getValue('contact_threshold_limit'))
-      ->set('contact_threshold_window', $form_state->getValue('contact_threshold_window'))->save();
+    $this->config('user.flood')
+      ->set('ip_limit', $form_state->getValue('ip_limit'))
+      ->set('ip_window', $form_state->getValue('ip_window'))
+      ->set('user_limit', $form_state->getValue('user_limit'))
+      ->set('user_window', $form_state->getValue('user_window'))
+      ->save();
+    $this->config('contact.settings')
+      ->set('flood.limit', $form_state->getValue('limit'))
+      ->set('flood.interval', $form_state->getValue('interval'))
+      ->save();
   }
 
   /**
@@ -124,7 +129,8 @@ class SettingsForm extends ConfigFormBase {
    */
   protected function getEditableConfigNames() {
     return [
-      'flood_control.settings',
+      'user.flood',
+      'contact.settings',
     ];
   }
 
